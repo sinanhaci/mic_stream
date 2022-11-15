@@ -264,7 +264,7 @@ public class MicStreamPlugin implements FlutterPlugin, EventChannel.StreamHandle
     }
 
     public static byte[] toByteArray(float[] floatArray) {
-        ByteBuffer buffer = ByteBuffer.allocate(floatArray.length * BYTES_IN_FLOAT)
+        ByteBuffer buffer = ByteBuffer.allocate(floatArray.length * BYTES_IN_FLOAT);
         buffer.asFloatBuffer().put(floatArray);
         return buffer.array();
     }
