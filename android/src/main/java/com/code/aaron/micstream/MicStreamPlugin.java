@@ -144,13 +144,16 @@ public class MicStreamPlugin implements FlutterPlugin, EventChannel.StreamHandle
                 mTotalSamples += numSamples;
 
 
+
+
+
                 // Read audio data into new byte array
                 //byte[] data = new byte[BUFFER_SIZE];
                 //recorder.read(data, 0, BUFFER_SIZE);
 
                 // push data into stream
                 try {
-                    eventSink.success(floatBuffer1000ms);
+                    eventSink.success(toByteArray(floatBuffer1000ms));
                 } catch (IllegalArgumentException e) {
                     System.out.println("mic_stream: " + Arrays.hashCode(floatBuffer) + " is not valid!");
                     eventSink.error("-1", "Invalid Data", e);
@@ -258,6 +261,12 @@ public class MicStreamPlugin implements FlutterPlugin, EventChannel.StreamHandle
             buffSize = sampleRateInHz;
         }
         return buffSize;
+    }
+
+    public static byte[] toByteArray(float[] floatArray) {
+        ByteBuffer buffer = ByteBuffer.allocate(floatArray.length * BYTES_IN_FLOAT)
+        buffer.asFloatBuffer().put(floatArray);
+        return buffer.array();
     }
 
     final double f0 = 500;
