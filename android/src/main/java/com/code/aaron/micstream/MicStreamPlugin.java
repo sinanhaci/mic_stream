@@ -1,6 +1,7 @@
 package com.code.aaron.micstream;
 
 import java.lang.Math;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -137,11 +138,11 @@ public class MicStreamPlugin implements FlutterPlugin, EventChannel.StreamHandle
                 for(int i=0;i<buffer.length;i++){
                     floatBuffer[i] = lpf_x(buffer[i]);
                 }
-
-                System.arraycopy(floatBuffer,0,floatTemp,floatTemp.length-floatBuffer.length,floatBuffer.length);
-                System.arraycopy(floatBuffer1000ms,floatBuffer.length,floatTemp,0,floatBuffer1000ms.length-floatBuffer.length);
-                floatBuffer1000ms=floatTemp;
-                mTotalSamples += numSamples;
+//
+//                System.arraycopy(floatBuffer,0,floatTemp,floatTemp.length-floatBuffer.length,floatBuffer.length);
+//                System.arraycopy(floatBuffer1000ms,floatBuffer.length,floatTemp,0,floatBuffer1000ms.length-floatBuffer.length);
+//                floatBuffer1000ms=floatTemp;
+//                mTotalSamples += numSamples;
 
 
 
@@ -153,7 +154,12 @@ public class MicStreamPlugin implements FlutterPlugin, EventChannel.StreamHandle
 
                 // push data into stream
                 try {
-                    eventSink.success(toByteArray(floatBuffer1000ms));
+
+                  eventSink.success(toByteArray(floatBuffer)); // datanın gönderildiği yer.
+                  //System.out.println("Mic side FloatBuffer F: " + floatBuffer.length);
+                  //System.out.println("Mic side FloatBuffer F: " + Arrays.toString(floatBuffer));
+                  //System.out.println("Mic side ToByte F: " + toByteArray(floatBuffer).length);
+                  //System.out.println("Mic side ToByte F: " + Arrays.toString(toByteArray(floatBuffer)));
                 } catch (IllegalArgumentException e) {
                     System.out.println("mic_stream: " + Arrays.hashCode(floatBuffer) + " is not valid!");
                     eventSink.error("-1", "Invalid Data", e);
@@ -263,11 +269,23 @@ public class MicStreamPlugin implements FlutterPlugin, EventChannel.StreamHandle
         return buffSize;
     }
 
-    public static byte[] toByteArray(float[] floatArray) {
-        ByteBuffer buffer = ByteBuffer.allocate(floatArray.length * BYTES_IN_FLOAT);
-        buffer.asFloatBuffer().put(floatArray);
-        return buffer.array();
+//    final static int BYTES_IN_FLOAT = Float.SIZE / Byte.SIZE;
+//    public static byte[] toByteArray(float[] floatArray) {
+//        ByteBuffer buffer = ByteBuffer.allocate(floatArray.length * BYTES_IN_FLOAT);
+//        buffer.asFloatBuffer().put(floatArray);
+//        return buffer.array();
+//    }
+
+  final static int nbBytesInFloat = Float.SIZE / Byte.SIZE;
+
+  public static byte[] toByteArray(float[] floatArray){
+    byte[] result = new byte[floatArray.length * nbBytesInFloat];
+    ByteBuffer wrappedBytes = ByteBuffer.wrap(result);
+    for(int i=0;i<floatArray.length;i++) {
+      wrappedBytes.putFloat(floatArray[i]);
     }
+    return result;
+  }
 
     final double f0 = 500;
     final double fs = 8000;
