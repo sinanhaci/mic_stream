@@ -3,6 +3,6 @@
 
 @implementation MicStreamPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SwiftMicStreamPlugin registerWithRegistrar:registrar];
+  [SwiftAudioStreamsPlugin registerWithRegistrar:registrar];
 }
 @end
